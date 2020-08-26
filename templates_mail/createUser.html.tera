@@ -1,0 +1,8 @@
+{% extends "base.html.tera" %}
+
+{% block content %}
+    <h1>Hello,</h1>
+    <p>to activate your account please click here:</p>
+    <a href="http://localhost:8000/ui/activate/{{ registration_code }}">Activate account</a>
+    <p></p>
+{% endblock content %}

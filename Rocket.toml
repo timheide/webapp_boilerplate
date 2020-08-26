@@ -1,0 +1,7 @@
+[global.databases.mysql]
+url = "mysql://boilerplate:boilerplate@localhost:3306/boilerplate"
+
+[production]
+#could be 0.0.0.0 for open ports
+address = "localhost"
+port = 8000

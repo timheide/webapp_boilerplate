@@ -1,0 +1,11 @@
+{% extends "base" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col text-center">
+            User successfully activated<br/><br/>
+            Your token is:<br/>
+            <strong>{{ token }}</strong>
+        </div>
+    </div>
+{% endblock content %} 

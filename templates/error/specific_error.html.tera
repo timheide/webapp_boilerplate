@@ -1,0 +1,10 @@
+{% extends "base" %}
+
+{% block content %}
+<div class="row">
+<div class="col text-center">
+    Error<br />
+    {{ error_message }}
+</div>
+</div>
+{% endblock content %} 

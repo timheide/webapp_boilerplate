@@ -1,0 +1,8 @@
+secretkey = ""
+
+[email]
+smtp_username = ""
+smtp_password = ""
+smtp_hostname = ""
+smtp_port = 465
+smtp_sending_address = ""

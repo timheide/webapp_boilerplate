@@ -1,0 +1,9 @@
+{% extends "base" %}
+
+{% block content %}
+<div class="row">
+<div class="col text-center">
+    Error<br />
+</div>
+</div>
+{% endblock content %} 
