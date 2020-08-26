@@ -17,12 +17,11 @@ Some features:
 
 ## Run
 ### .env
-Update  ```Rocket.toml``` to specify the connection to your database
+Create an environment file ```.env``` to specify the connection to your database. 
+For example:
 ```
-[global.databases.mysql]
-url = "mysql://boilerplate:boilerplate@localhost:3306/boilerplate"
+ROCKET_DATABASES='{webapp_boilerplate={url="mysql://boilerplate:boilerplate@localhost:3306/boilerplate"}}'
 ```
-
 ### Config.toml
 Before running the template make sure to create a file ```Config.toml```. You can create a copy of ```Config_template.toml```.
 Make sure to fill in the required configuration parameters:

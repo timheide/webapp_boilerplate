@@ -22,13 +22,12 @@ use config::Config;
 use rocket::{Outcome};
 use rocket::request::{self, Request, FromRequest};
 use dotenv::dotenv;
-use std::env;
 
 mod frontend;
 mod user;
 mod mailer;
 
-#[database("mysql")]
+#[database("webapp_boilerplate")]
 pub struct DbConn(diesel::MysqlConnection);
 
 /// Custom Responder for Errors in the application
