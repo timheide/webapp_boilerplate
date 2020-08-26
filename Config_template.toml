@@ -1,4 +1,4 @@
-secretkey = ""
+secretkey = "" # Secret key for JWT encryption
 
 [email]
 smtp_username = ""

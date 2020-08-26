@@ -34,6 +34,7 @@ log4rs = "0.12"
 rocket-multipart-form-data = "0.9"
 mime = "0.3"
 image = "0.23"
+dotenv = "0.15"
 
 [dependencies.rocket_contrib]
 version = "0.4"

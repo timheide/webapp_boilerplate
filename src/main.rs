@@ -21,6 +21,8 @@ use rocket_contrib::json::JsonValue;
 use config::Config;
 use rocket::{Outcome};
 use rocket::request::{self, Request, FromRequest};
+use dotenv::dotenv;
+use std::env;
 
 mod frontend;
 mod user;
@@ -50,6 +52,7 @@ pub enum CustomResponder {
 }
 
 fn main() {
+    dotenv().ok();
     log4rs::init_file("log4rs.yml", Default::default()).unwrap();
     let mut rocket = rocket::ignite()
         .attach(DbConn::fairing())
