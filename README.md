@@ -2,18 +2,20 @@
 
 <img src="https://img.shields.io/github/workflow/status/tserowski/webapp_boilerplate/Rust">
 
-This is an example project for building a modern RESTful API driven backend with JWT token authentication using rust, rocket and diesel.
+This is an example project for building a RESTful API backend with JWT authentication using Rust, Rocket and Diesel.
 
 This boilerplate template gives examples for various use cases and solutions for some caveats that could occur during the implementation of a backend with rust, diesel and rocket. This example template is not recommended to be used for production puproses!
 
 Some features:
 * MySQL/MariaDB integration
-* User registration with random registration codes for activation
-* User activation with activation emails using lettre email with tera html templates
-* User authentication using JWT (JSON web token) and/or Cookies
+* User registration / activation / forgot password / update / image upload / etc.
+* HTML emails using tera templates
+* User authentication using JWT (JSON web token) auth headers and/or Cookies
 * Configurable application settings using .toml config file
-* HTML templating for emails powered by tera
-* Image upload with multipart/form, database stored files and base64 encoding for JSON inline delivery
+* Examples for basic HTML templating using tera
+* Image upload with multipart/form, thumbnail generation, database stored files and base64 encoding for JSON inline delivery
+
+This example backend works with minimal configuration on a vue / nuxt.js project with enabled ```@nuxtjs/auth``` module.
 
 ## Prepare
 ### .env
@@ -24,7 +26,7 @@ ROCKET_DATABASES='{webapp_boilerplate={url="mysql://boilerplate:boilerplate@loca
 ```
 ### Config.toml
 Before running the template make sure to create a file ```Config.toml```. You can create a copy of ```Config_template.toml```.
-Make sure to fill in the required configuration parameters:
+Make sure to fill in **all of the following** configuration parameters:
 ```
 secretkey = ""  # Secret key for JWT encryption
 
