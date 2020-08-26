@@ -2,7 +2,7 @@
 
 <img src="https://img.shields.io/github/workflow/status/tserowski/webapp_boilerplate/Rust">
 
-This is an example project for building a modern RESTful API driven backend using rust, rocket and diesel.
+This is an example project for building a modern RESTful API driven backend with JWT token authentication using rust, rocket and diesel.
 
 This boilerplate template gives examples for various use cases and solutions for some caveats that could occur during the implementation of a backend with rust, diesel and rocket. This example template is not recommended to be used for production puproses!
 
