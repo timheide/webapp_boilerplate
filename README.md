@@ -15,7 +15,7 @@ Some features:
 * HTML templating for emails powered by tera
 * Image upload with multipart/form, database stored files and base64 encoding for JSON inline delivery
 
-## Run
+## Prepare
 ### .env
 Create an environment file ```.env``` to specify the connection to your database. 
 For example:
@@ -36,6 +36,7 @@ smtp_port = 465
 smtp_sending_address = ""
 ```
 
+## Build & Run
 
 This template uses Rocket which only works with nightly rust. To build this project with the latest 
 rust nightly run:
@@ -46,4 +47,4 @@ And to run the server:
 
 ``` cargo +nightly run --release ```
 
-For further information about running software with rust nightly consider the [documentation](https://doc.rust-lang.org/edition-guide/rust-2018/rustup-for-managing-rust-versions.html)
+For further information about running software with the Rust nightly toolchain consider the [documentation](https://doc.rust-lang.org/edition-guide/rust-2018/rustup-for-managing-rust-versions.html)
