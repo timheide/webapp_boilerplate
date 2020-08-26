@@ -1,5 +1,6 @@
-Rust Rocket RESTful API backend boilerplate template
-===================================
+# Rust Rocket RESTful API backend boilerplate template
+
+<img src="https://img.shields.io/github/workflow/status/tserowski/webapp_boilerplate/Rust">
 
 This is an example project for building a modern RESTful API driven backend using rust, rocket and diesel.
 
