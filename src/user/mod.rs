@@ -87,7 +87,7 @@ fn create(newuser: Result<Json<NewUserPostData>, JsonError>, connection: DbConn)
             // Return a JSON Object consisting of the newly created user and a status.
             Ok(Json(json!({"data":{"user": created_user},"status": {"code":200, "text": "User created"}})))
         }
-        // The submitted Post data could not be deserialized as NewUserPostData. We now handle that error
+        // The submitted Post data could not be deserialized. We now handle that error
         Err(jsonerror) => {
             // Differentiate between different error types
             let errorstring = match jsonerror {
@@ -119,11 +119,16 @@ fn update(user: &User, updateduser: Result<Json<UpdateUser>, JsonError>, connect
             User::update(&update, &connection.0);
             Ok(Json(json!({"status": {"code":200, "text": "User updated"}})))
         }
+        // The submitted Post data could not be deserialized. We now handle that error
         Err(jsonerror) => {
+            // Differentiate between different error types
             let errorstring = match jsonerror {
+                // Result was an IO error. Return an empty String
                 JsonError::Io(_) => { String::from("") }
+                // Result was a parse error. Return the error message as String
                 JsonError::Parse(_, e) => { e.to_string() }
             };
+            // Return a 422 Error code with a detailed description of the format error.
             Err(CustomResponder::UnprocessableEntity(Json(json!({"status": {"code": 422,"text": errorstring}}))))
         }
     }
@@ -162,11 +167,16 @@ fn update_email(user: &User, update_email: Result<Json<UpdateEmail>, JsonError>,
                 }
             }
         }
+        // The submitted Post data could not be deserialized. We now handle that error
         Err(jsonerror) => {
+            // Differentiate between different error types
             let errorstring = match jsonerror {
+                // Result was an IO error. Return an empty String
                 JsonError::Io(_) => { String::from("") }
+                // Result was a parse error. Return the error message as String
                 JsonError::Parse(_, e) => { e.to_string() }
             };
+            // Return a 422 Error code with a detailed description of the format error.
             Err(CustomResponder::UnprocessableEntity(Json(json!({"status": {"code": 422,"text": errorstring}}))))
         }
     }
@@ -199,11 +209,16 @@ fn request_reset(post_data: Result<Json<EmailAdress>, JsonError>, connection: Db
                 }
             }
         }
+        // The submitted Post data could not be deserialized. We now handle that error
         Err(jsonerror) => {
+            // Differentiate between different error types
             let errorstring = match jsonerror {
+                // Result was an IO error. Return an empty String
                 JsonError::Io(_) => { String::from("") }
+                // Result was a parse error. Return the error message as String
                 JsonError::Parse(_, e) => { e.to_string() }
             };
+            // Return a 422 Error code with a detailed description of the format error.
             Err(CustomResponder::UnprocessableEntity(Json(json!({"status": {"code": 422,"text": errorstring}}))))
         }
     }
@@ -251,11 +266,16 @@ fn reset_password(resetform: Result<Json<ResetForm>, JsonError>, mut cookies: Co
                 }
             }
         }
+        // The submitted Post data could not be deserialized. We now handle that error
         Err(jsonerror) => {
+            // Differentiate between different error types
             let errorstring = match jsonerror {
+                // Result was an IO error. Return an empty String
                 JsonError::Io(_) => { String::from("") }
+                // Result was a parse error. Return the error message as String
                 JsonError::Parse(_, e) => { e.to_string() }
             };
+            // Return a 422 Error code with a detailed description of the format error.
             Err(CustomResponder::UnprocessableEntity(Json(json!({"status": {"code": 422,"text": errorstring}}))))
         }
     }
@@ -317,11 +337,16 @@ fn resend_activation(activation_email: Result<Json<ResendActivationForm>, JsonEr
                 Err(CustomResponder::InternalServerError(Json(json!({ "status": {"code": 500, "text": "User already activated" }}))))
             }
         }
+        // The submitted Post data could not be deserialized. We now handle that error
         Err(jsonerror) => {
+            // Differentiate between different error types
             let errorstring = match jsonerror {
+                // Result was an IO error. Return an empty String
                 JsonError::Io(_) => { String::from("") }
+                // Result was a parse error. Return the error message as String
                 JsonError::Parse(_, e) => { e.to_string() }
             };
+            // Return a 422 Error code with a detailed description of the format error.
             Err(CustomResponder::UnprocessableEntity(Json(json!({"status": {"code": 422,"text": errorstring}}))))
         }
     }
@@ -355,11 +380,16 @@ fn update_password(user: &User, updatepassword: Result<Json<UpdatePassword>, Jso
                 Err(CustomResponder::Unauthorized(Json(json!({"status": {"code": 401,"text": "Invalid password"}}))))
             }
         }
+        // The submitted Post data could not be deserialized. We now handle that error
         Err(jsonerror) => {
+            // Differentiate between different error types
             let errorstring = match jsonerror {
+                // Result was an IO error. Return an empty String
                 JsonError::Io(_) => { String::from("") }
+                // Result was a parse error. Return the error message as String
                 JsonError::Parse(_, e) => { e.to_string() }
             };
+            // Return a 422 Error code with a detailed description of the format error.
             Err(CustomResponder::UnprocessableEntity(Json(json!({"status": {"code": 422,"text": errorstring}}))))
         }
     }
@@ -409,11 +439,16 @@ fn login(mut cookies: Cookies, credentials: Result<Json<Credentials>, JsonError>
                 }
             }
         }
+        // The submitted Post data could not be deserialized. We now handle that error
         Err(jsonerror) => {
+            // Differentiate between different error types
             let errorstring = match jsonerror {
+                // Result was an IO error. Return an empty String
                 JsonError::Io(_) => { String::from("") }
+                // Result was a parse error. Return the error message as String
                 JsonError::Parse(_, e) => { e.to_string() }
             };
+            // Return a 422 Error code with a detailed description of the format error.
             Err(CustomResponder::UnprocessableEntity(Json(json!({"status": {"code": 422,"text": errorstring}}))))
         }
     }
