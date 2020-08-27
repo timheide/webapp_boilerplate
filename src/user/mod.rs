@@ -21,6 +21,7 @@ use std::io::BufReader;
 use std::path::PathBuf;
 use rand::Rng;
 use rand::distributions::Alphanumeric;
+use std::time::SystemTime;
 
 /// Mount routes for Rocket.
 pub fn mount(rocket: rocket::Rocket) -> rocket::Rocket {
@@ -50,6 +51,7 @@ struct NewUser {
 ///
 /// # Example
 ///
+/// ```text
 /// curl --request POST \
 ///   --url http://localhost:8000/user/ \
 ///   --header 'content-type: application/json' \
@@ -57,6 +59,7 @@ struct NewUser {
 /// 	"email": "info@example.com",
 /// 	"password": "example_password"
 /// }'
+/// ```
 ///
 #[post("/", data = "<newuser>")]
 fn create(newuser: Result<Json<NewUser>, JsonError>, connection: DbConn) -> Result<Json<JsonValue>, CustomResponder> {
@@ -102,21 +105,64 @@ fn create(newuser: Result<Json<NewUser>, JsonError>, connection: DbConn) -> Resu
     }
 }
 
-
-#[derive(Serialize, Deserialize)]
+/// POST data object for an updated User
+// Deserialize from Serde is derived to enable deserialization from JSON data to a UpdateUser type
+#[derive(Deserialize)]
 struct UpdateUser {
+    // First name
     pub firstname: String,
 }
 
+/// Updates an existing user
+///
+/// # Arguments
+///
+/// * `user` -  The currently logged in User
+/// * `updateuser` - A JSON encoded UpdateUser
+/// * `connection` - Database connection
+///
+/// # Example
+///
+/// ## cURL with Cookie
+/// ```text
+/// curl --request PUT \
+///   --url http://localhost:8000/user \
+///   --header 'content-type: application/json' \
+///   --cookie token=eyJhbGciOiJIUzI1NiJ9.eyJ.................XnFVfzxstncqTlDkHisaiyj26A \
+///   --data '{
+/// 	"firstname": "Daniel"
+/// }'
+/// ```
+///
+/// ## cURL with Bearer Token auth header
+/// ```text
+/// curl --request PUT \
+///   --url http://localhost:8000/user \
+///   --header 'authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ.................XnFVfzxstncqTlDkHisaiyj26A' \
+///   --header 'content-type: application/json' \
+///   --data '{
+/// 	"firstname": "Daniel"
+/// }'
+/// ```
+///
 #[put("/", data = "<updateduser>")]
 fn update(user: &User, updateduser: Result<Json<UpdateUser>, JsonError>, connection: DbConn) -> Result<Json<JsonValue>, CustomResponder> {
+    // Check if the submitted Form data is a correct UpdateUser object
     match updateduser {
+        // found a correct UpdateUser
         Ok(updateduser) => {
+            // Create a new user object that is derived from the logged in user and has the changed values from the UpdateUser POST object
             let update = User {
+                // set firstname
                 firstname: updateduser.firstname.clone(),
+                // Update edit date
+                edit_date: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs(),
+                // all other attributes are inherited from the logged in user
                 ..user.clone()
             };
+            // Update the database user
             User::update(&update, &connection.0);
+            // Return a successful result
             Ok(Json(json!({"status": {"code":200, "text": "User updated"}})))
         }
         // The submitted Post data could not be deserialized. We now handle that error

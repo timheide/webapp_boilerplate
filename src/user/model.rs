@@ -20,7 +20,8 @@ pub struct User {
     pub registration_code: Option<String>,
     pub reset_code: Option<String>,
     pub image: Option<Vec<u8>>,
-    pub create_date: u64
+    pub create_date: u64,
+    pub edit_date: u64
 }
 
 impl Serialize for User {
@@ -62,6 +63,7 @@ impl From<NewUser> for User {
             password: bcrypt::hash(&newuser.password, bcrypt::DEFAULT_COST).unwrap(),
             registration_code: Some(registration_code),
             create_date: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs(),
+            edit_date: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs(),
             ..Default::default()
         }
     }

@@ -9,5 +9,6 @@ table! {
         reset_code -> Nullable<Varchar>,
         image -> Nullable<Mediumblob>,
         create_date -> Unsigned<Bigint>,
+        edit_date -> Unsigned<Bigint>,
     }
 }
