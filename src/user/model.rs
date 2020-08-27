@@ -4,7 +4,7 @@ use diesel::mysql::MysqlConnection;
 use crate::user::schema::users;
 use bcrypt::{verify};
 use serde::ser::{Serialize, Serializer, SerializeStruct};
-use crate::user::NewUserPostData;
+use crate::user::NewUser;
 use rand::Rng;
 use rand::distributions::Alphanumeric;
 use std::time::SystemTime;
@@ -53,8 +53,8 @@ impl Serialize for User {
     }
 }
 
-impl From<NewUserPostData> for User {
-    fn from(newuser: NewUserPostData) -> Self {
+impl From<NewUser> for User {
+    fn from(newuser: NewUser) -> Self {
         // create an random alphanumeric code
         let registration_code: String = rand::thread_rng().sample_iter(&Alphanumeric).take(8).collect();
         User {

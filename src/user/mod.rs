@@ -34,7 +34,7 @@ pub fn mount(rocket: rocket::Rocket) -> rocket::Rocket {
 /// POST data object for a new User
 // Deserialize from Serde is derived to enable deserialization from JSON data to a NewUserPostData type
 #[derive(Deserialize)]
-struct NewUserPostData {
+struct NewUser {
     // email address for the new user
     pub email: String,
     // password for the new user
@@ -59,7 +59,7 @@ struct NewUserPostData {
 /// }'
 ///
 #[post("/", data = "<newuser>")]
-fn create(newuser: Result<Json<NewUserPostData>, JsonError>, connection: DbConn) -> Result<Json<JsonValue>, CustomResponder> {
+fn create(newuser: Result<Json<NewUser>, JsonError>, connection: DbConn) -> Result<Json<JsonValue>, CustomResponder> {
     // Check if the submitted Form data is a correct NewUserPostData object
     match newuser {
         // found a correct NewUserPostData
@@ -134,10 +134,6 @@ fn update(user: &User, updateduser: Result<Json<UpdateUser>, JsonError>, connect
     }
 }
 
-#[derive(Serialize, Deserialize)]
-struct EmailAdress {
-    pub email: String,
-}
 
 
 #[derive(Serialize, Deserialize)]
@@ -187,6 +183,11 @@ fn update_email_error() -> Result<Json<JsonValue>, CustomResponder> {
     Err(CustomResponder::Unauthorized(Json(json!({"status": {"code": 401,"text": "Not authorized"}}))))
 }
 
+
+#[derive(Serialize, Deserialize)]
+struct EmailAdress {
+    pub email: String,
+}
 #[post("/request_reset", data = "<post_data>")]
 fn request_reset(post_data: Result<Json<EmailAdress>, JsonError>, connection: DbConn) -> Result<Json<JsonValue>, CustomResponder> {
     match post_data {
