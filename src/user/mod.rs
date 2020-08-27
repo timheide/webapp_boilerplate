@@ -32,7 +32,7 @@ pub fn mount(rocket: rocket::Rocket) -> rocket::Rocket {
 }
 
 /// POST data object for a new User
-// Deserialize from Serde is derived to enable deserialization from JSON data to a NewUserPostData type
+// Deserialize from Serde is derived to enable deserialization from JSON data to a NewUser type
 #[derive(Deserialize)]
 struct NewUser {
     // email address for the new user
@@ -45,7 +45,7 @@ struct NewUser {
 ///
 /// # Arguments
 ///
-/// * `newuser` - A JSON encoded NewUserPostData
+/// * `newuser` - A JSON encoded NewUser
 /// * `connection` - Database connection
 ///
 /// # Example
@@ -60,15 +60,15 @@ struct NewUser {
 ///
 #[post("/", data = "<newuser>")]
 fn create(newuser: Result<Json<NewUser>, JsonError>, connection: DbConn) -> Result<Json<JsonValue>, CustomResponder> {
-    // Check if the submitted Form data is a correct NewUserPostData object
+    // Check if the submitted Form data is a correct NewUser object
     match newuser {
-        // found a correct NewUserPostData
+        // found a correct NewUser
         Ok(newuser) => {
             // Return with a Conflict error if a user with this email address already exists
             if let Some(_) = User::by_email(&newuser.email, &connection.0) {
                 return Err(CustomResponder::Conflict(Json(json!({ "status": {"code": 409, "text": "A User with this email address already exists" }}))));
             }
-            // Create a new User from a NewUserPostData object using a trait
+            // Create a new User from a NewUser object using a trait
             let prepared_user = User::from(newuser.0);
             // Save the prepared new user object in the Database
             let created_user = match User::create(prepared_user, &connection.0) {
