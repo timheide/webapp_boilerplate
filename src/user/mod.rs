@@ -3,7 +3,6 @@ pub mod schema;
 pub mod auth;
 
 use rocket::{self, http::{Cookie, Cookies}, Data};
-
 use bcrypt::{DEFAULT_COST, hash, verify};
 use rocket_contrib::json::{Json, JsonError};
 use rocket_contrib::json::JsonValue;
@@ -23,44 +22,81 @@ use std::path::PathBuf;
 use rand::Rng;
 use rand::distributions::Alphanumeric;
 
+/// Mount routes for Rocket.
 pub fn mount(rocket: rocket::Rocket) -> rocket::Rocket {
     rocket
+        // Mount regular routes
         .mount("/user", routes![create, activate, update, update_email, resend_activation, request_reset, reset_password, update_password, login, logout, update_photo])
+        // Mount routes for error handling (Unauthorized)
         .mount("/user", routes![update_password_error, update_photo_error, update_email_error])
 }
 
-#[derive(Serialize, Deserialize)]
-struct NewUser {
+/// POST data object for a new User
+// Deserialize from Serde is derived to enable deserialization from JSON data to a NewUserPostData type
+#[derive(Deserialize)]
+struct NewUserPostData {
+    // email address for the new user
     pub email: String,
+    // password for the new user
     pub password: String,
 }
 
+/// Create a new User
+///
+/// # Arguments
+///
+/// * `newuser` - A JSON encoded NewUserPostData
+/// * `connection` - Database connection
+///
+/// # Example
+///
+/// curl --request POST \
+///   --url http://localhost:8000/user/ \
+///   --header 'content-type: application/json' \
+///   --data '{
+/// 	"email": "info@example.com",
+/// 	"password": "example_password"
+/// }'
+///
 #[post("/", data = "<newuser>")]
-fn create(newuser: Result<Json<NewUser>, JsonError>, connection: DbConn) -> Result<Json<JsonValue>, CustomResponder> {
+fn create(newuser: Result<Json<NewUserPostData>, JsonError>, connection: DbConn) -> Result<Json<JsonValue>, CustomResponder> {
+    // Check if the submitted Form data is a correct NewUserPostData object
     match newuser {
+        // found a correct NewUserPostData
         Ok(newuser) => {
+            // Return with a Conflict error if a user with this email address already exists
             if let Some(_) = User::by_email(&newuser.email, &connection.0) {
                 return Err(CustomResponder::Conflict(Json(json!({ "status": {"code": 409, "text": "A User with this email address already exists" }}))));
             }
+            // Create a new User from a NewUserPostData object using a trait
             let prepared_user = User::from(newuser.0);
+            // Save the prepared new user object in the Database
             let created_user = match User::create(prepared_user, &connection.0) {
+                // The user was created successfully
                 Ok(u) => u,
+                // A database error occured
                 Err(_) => return Err(CustomResponder::InternalServerError(Json(json!({ "status": {"code": 500, "text": "User could not be created" }}))))
             };
-
-            //Send email
+            // The user has been created so we now send the activation email to the user
+            // Create an empty context to add data to. Everything that is appended will be available in the HTML email template
             let mut context = Context::new();
+            // Add the registration code to the tera template
             context.insert("registration_code", &created_user.registration_code);
-            let template = "createUser".to_string();
-            let _ = mailer::sendmail(&created_user, context, template, String::from("web_application - Registration successful"), None);
-
+            // Send the activation email to the created user
+            let _ = mailer::sendmail(&created_user, context, String::from("createUser"), String::from("web_application - Registration successful"), None);
+            // Return a JSON Object consisting of the newly created user and a status.
             Ok(Json(json!({"data":{"user": created_user},"status": {"code":200, "text": "User created"}})))
         }
+        // The submitted Post data could not be deserialized as NewUserPostData. We now handle that error
         Err(jsonerror) => {
+            // Differentiate between different error types
             let errorstring = match jsonerror {
+                // Result was an IO error. Return an empty String
                 JsonError::Io(_) => { String::from("") }
+                // Result was a parse error. Return the error message as String
                 JsonError::Parse(_, e) => { e.to_string() }
             };
+            // Return a 422 Error code with a detailed description of the format error.
             Err(CustomResponder::UnprocessableEntity(Json(json!({"status": {"code": 422,"text": errorstring}}))))
         }
     }

@@ -4,9 +4,10 @@ use diesel::mysql::MysqlConnection;
 use crate::user::schema::users;
 use bcrypt::{verify};
 use serde::ser::{Serialize, Serializer, SerializeStruct};
-use crate::user::NewUser;
+use crate::user::NewUserPostData;
 use rand::Rng;
 use rand::distributions::Alphanumeric;
+use std::time::SystemTime;
 
 #[table_name = "users"]
 #[changeset_options(treat_none_as_null = "true")]
@@ -19,6 +20,7 @@ pub struct User {
     pub registration_code: Option<String>,
     pub reset_code: Option<String>,
     pub image: Option<Vec<u8>>,
+    pub create_date: u64
 }
 
 impl Serialize for User {
@@ -51,14 +53,15 @@ impl Serialize for User {
     }
 }
 
-impl From<NewUser> for User {
-    fn from(newuser: NewUser) -> Self {
+impl From<NewUserPostData> for User {
+    fn from(newuser: NewUserPostData) -> Self {
         // create an random alphanumeric code
         let registration_code: String = rand::thread_rng().sample_iter(&Alphanumeric).take(8).collect();
         User {
             email: newuser.email,
             password: bcrypt::hash(&newuser.password, bcrypt::DEFAULT_COST).unwrap(),
             registration_code: Some(registration_code),
+            create_date: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs(),
             ..Default::default()
         }
     }

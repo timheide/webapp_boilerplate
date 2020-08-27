@@ -8,5 +8,6 @@ table! {
         registration_code -> Nullable<Varchar>,
         reset_code -> Nullable<Varchar>,
         image -> Nullable<Mediumblob>,
+        create_date -> Unsigned<Bigint>,
     }
 }
