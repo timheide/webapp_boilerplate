@@ -22,6 +22,8 @@ use config::Config;
 use rocket::{Outcome};
 use rocket::request::{self, Request, FromRequest};
 use dotenv::dotenv;
+use rocket::http::Method;
+use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors};
 
 mod frontend;
 mod user;
@@ -50,12 +52,31 @@ pub enum CustomResponder {
     Conflict(Json<JsonValue>),
 }
 
+fn make_cors() -> Cors {
+    let (allowed_origins, _failed_origins) = AllowedOrigins::some(&[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]);
+
+    rocket_cors::Cors {
+        allowed_origins,
+        allowed_methods: vec![Method::Get, Method::Post, Method::Put, Method::Delete].into_iter().map(From::from).collect(),
+        allowed_headers: AllowedHeaders::some(&["Content-Type","Authorization","Accept","Access-Control-Allow-Origin"]),
+        allow_credentials: true,
+        ..Default::default()
+    }
+}
+
+
 fn main() {
     dotenv().ok();
     log4rs::init_file("log4rs.yml", Default::default()).unwrap();
     let mut rocket = rocket::ignite()
         .attach(DbConn::fairing())
         .attach(Template::fairing())
+        .mount("/", rocket_cors::catch_all_options_routes())
+        .manage(make_cors())
+        .attach(make_cors())
         .mount("/assets", StaticFiles::from("templates/assets/"));
     rocket = user::mount(rocket);
     rocket = frontend::mount(rocket);
