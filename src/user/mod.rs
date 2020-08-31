@@ -27,9 +27,9 @@ use std::time::SystemTime;
 pub fn mount(rocket: rocket::Rocket) -> rocket::Rocket {
     rocket
         // Mount regular routes
-        .mount("/user", routes![create, activate, update, update_email, resend_activation, request_reset, reset_password, update_password, login, logout, update_photo])
+        .mount("/user", routes![info, create, activate, update, update_email, resend_activation, request_reset, reset_password, update_password, login, logout, update_photo])
         // Mount routes for error handling (Unauthorized)
-        .mount("/user", routes![update_password_error, update_photo_error, update_email_error])
+        .mount("/user", routes![info_error, update_password_error, update_photo_error, update_email_error])
 }
 
 /// POST data object for a new User
@@ -40,6 +40,31 @@ struct NewUser {
     pub email: String,
     // password for the new user
     pub password: String,
+}
+
+
+/// Infor on user
+///
+/// # Arguments
+///
+/// * `user` -  The currently logged in User
+///
+/// # Example
+///
+/// ```text
+/// curl --request GET \
+///   --url http://localhost:8000/user/me/ \
+///   --header 'authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ.................XnFVfzxstncqTlDkHisaiyj26A' \
+/// ```
+///
+#[get("/me")]
+fn info(user: &User) -> Result<Json<JsonValue>, CustomResponder> {
+    Ok(Json(json!({"data": user,"status": {"code": 200,"text": "User found"}})))
+}
+
+#[get("/me", rank = 999)]
+fn info_error() -> Result<Json<JsonValue>, CustomResponder> {
+    Err(CustomResponder::Unauthorized(Json(json!({"status": {"code": 401,"text": "Not authorized"}}))))
 }
 
 /// Create a new User
