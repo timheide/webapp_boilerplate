@@ -32,16 +32,6 @@ pub fn mount(rocket: rocket::Rocket) -> rocket::Rocket {
         .mount("/user", routes![info_error, update_password_error, update_photo_error, update_email_error])
 }
 
-/// POST data object for a new User
-// Deserialize from Serde is derived to enable deserialization from JSON data to a NewUser type
-#[derive(Deserialize)]
-struct NewUser {
-    // email address for the new user
-    pub email: String,
-    // password for the new user
-    pub password: String,
-}
-
 
 /// Infor on user
 ///
@@ -65,6 +55,17 @@ fn info(user: &User) -> Result<Json<JsonValue>, CustomResponder> {
 #[get("/me", rank = 999)]
 fn info_error() -> Result<Json<JsonValue>, CustomResponder> {
     Err(CustomResponder::Unauthorized(Json(json!({"status": {"code": 401,"text": "Not authorized"}}))))
+}
+
+
+/// POST data object for a new User
+// Deserialize from Serde is derived to enable deserialization from JSON data to a NewUser type
+#[derive(Deserialize)]
+struct NewUser {
+    // email address for the new user
+    pub email: String,
+    // password for the new user
+    pub password: String,
 }
 
 /// Create a new User
