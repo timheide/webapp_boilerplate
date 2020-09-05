@@ -829,7 +829,7 @@ fn update_photo(user: &User, content_type: &ContentType, data: Data, connection:
     // get the files field from the multipart form.
     let photo = multipart_form_data.files.get("file");
     // the photo field contains a vector with files
-    if let Some(files) = photo {
+    return if let Some(files) = photo {
         // iterate over the vector of file fields (could only be one)
         for file in files {
             // get the file name
@@ -857,9 +857,9 @@ fn update_photo(user: &User, content_type: &ContentType, data: Data, connection:
             let _ = User::update(&mut_user, &connection.0);
         }
         // return a successful result
-        return Ok(Json(json!({"data": mut_user,"status": {"code": 200,"text": "Image uploaded successfully"}})));
+        Ok(Json(json!({"data": mut_user,"status": {"code": 200,"text": "Image uploaded successfully"}})))
     } else {
-        return Err(CustomResponder::Unauthorized(Json(json!({"status": {"code": 500,"text": "Image not found. Please use multipart/form with exactly one 'file' parameter being an image"}}))));
+        Err(CustomResponder::Unauthorized(Json(json!({"status": {"code": 500,"text": "Image not found. Please use multipart/form with exactly one 'file' parameter being an image"}}))))
     }
 }
 
