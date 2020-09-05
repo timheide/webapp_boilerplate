@@ -829,7 +829,7 @@ fn update_photo(user: &User, content_type: &ContentType, data: Data, connection:
     // get the files field from the multipart form.
     let photo = multipart_form_data.files.get("file");
     // the photo field contains a vector with files
-    return if let Some(files) = photo {
+    if let Some(files) = photo {
         // iterate over the vector of file fields (could only be one)
         for file in files {
             // get the file name
